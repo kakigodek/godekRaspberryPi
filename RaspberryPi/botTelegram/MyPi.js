@@ -1,3 +1,9 @@
+//web     : kakigodek.my
+//youtube : youtube.com/c/kakigodek
+//TikTok  : https://www.tiktok.com/@kakigodek?lang=en
+//====================================================
+
+
 const {Telegraf} = require('telegraf')
 const {execSync} = require('child_process')
 
