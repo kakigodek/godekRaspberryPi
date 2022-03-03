@@ -15,10 +15,10 @@ GPIO.setwarnings(False)
 
 GPIO.setup(7,GPIO.OUT)    #Set gpio port as output
 
-print "LED on"            #Print LED on
+print ("LED on")          #Print LED on
 GPIO.output(7,GPIO.LOW)   #Turn on relay on gpio 7
 
 time.sleep(1)             #delay 1 sec
 
-print "LED off"           #Print LED on
+print ("LED off")         #Print LED on
 GPIO.output(7,GPIO.HIGH)  #Turn on relay off gpio 7
