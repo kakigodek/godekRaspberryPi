@@ -34,7 +34,7 @@ bot.command('help', (ctx)=>{
 bot.action('ipScript', (ctx)=>{
     ctx.deleteMessage();
 
-    const output = execSync('hostname -I', { encoding: 'utf-8' });
+    const output = execSync('hostname -I | cut -d" " -f1', { encoding: 'utf-8' });
     let oL = output;
     ctx.telegram.sendMessage(ctx.chat.id, 'Your Raspberry Pi IP is :')
     ctx.telegram.sendMessage(ctx.chat.id, oL)
