@@ -1,4 +1,4 @@
-//Author  : kakigodek
+/*Author  : kakigodek
 //website : kakigodek.my
 //Youtube : www.youtube.com/c/kakigodek
 //TikTok  : tiktok.com/@kakigodek?lang=en
@@ -6,6 +6,8 @@
 //Desc    : Copy protection SD-Card Script, to prevent somebody to copy/duplicate your Raspberry Pi Product. Start this script at cron.
 //Cron cmd: @reboot /path/to/script >> /path/to/log
 //====================================================
+*/
+
 #!/bin/bash
 NOW=$(date)
 sleep 1m ##Pause 1 minutes before start process.
