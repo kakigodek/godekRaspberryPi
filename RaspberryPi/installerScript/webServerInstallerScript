@@ -33,10 +33,13 @@ sudo apt install phpmyadmin -y
 sudo ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
 
 # Allow the Apache web server to use PHPMyAdmin
-sudo nano /etc/apache2/apache2.conf
+#sudo nano /etc/apache2/apache2.conf
 
 # Add the following line to the bottom of the file:
 # Include /etc/phpmyadmin/apache.conf
+
+##new Mod
+echo 'Include /etc/phpmyadmin/apache.conf' >> /etc/apache2/apache2.conf
 
 # Save the file and exit the text editor.
 
