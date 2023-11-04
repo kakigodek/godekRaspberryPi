@@ -1,1 +1,59 @@
-readMe.
+#!/bin/bash
+
+# Update the package list
+sudo apt update -y
+
+# Install Apache web server
+sudo apt install apache2 -y
+
+# Start and enable Apache service
+sudo systemctl start apache2
+sudo systemctl enable apache2
+
+# Install PHP and required modules
+sudo apt install php libapache2-mod-php php-mysql -y
+
+# Restart Apache to load PHP
+sudo systemctl restart apache2
+
+# Install MySQL server
+sudo apt install mariadb-server -y
+
+# Secure MySQL installation
+sudo mysql_secure_installation
+
+# Install PHPMyAdmin
+sudo apt install phpmyadmin -y
+
+# During installation, you will be prompted to choose a web server. 
+# Select Apache2 by pressing the spacebar, and then press Enter.
+# When asked if you want to configure the database for phpmyadmin with dbconfig-common, select "Yes."
+
+# Create a symbolic link to phpmyadmin in the Apache web directory
+sudo ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
+
+# Allow the Apache web server to use PHPMyAdmin
+sudo nano /etc/apache2/apache2.conf
+
+# Add the following line to the bottom of the file:
+# Include /etc/phpmyadmin/apache.conf
+
+# Save the file and exit the text editor.
+
+# Restart Apache to apply the changes
+sudo systemctl restart apache2
+
+# Your Apache, PHP, PHPMyAdmin, and MySQL setup is complete.
+
+# Test Apache:
+echo "Testing Apache... Visit http://localhost/ in your web browser to see the default Apache page."
+
+# Test PHP:
+echo "Testing PHP... Creating a PHP test file."
+echo "<?php phpinfo(); ?>" | sudo tee /var/www/html/info.php
+echo "PHP test file created. Visit http://localhost/info.php in your web browser to see PHP information."
+
+# Test PHPMyAdmin:
+echo "Testing PHPMyAdmin... Visit http://localhost/phpmyadmin/ in your web browser to access PHPMyAdmin."
+
+# You can now access PHPMyAdmin to manage your MySQL databases.
