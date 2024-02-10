@@ -51,6 +51,8 @@ echo "telegraf and node-datetime modules installation completed."
 # Prompt user to insert bot token
 bot_token=$(prompt_input "Please enter the bot token")
 
+cd "$bot_directory"
+
 # Set bot token as environment variable for this session
 export BOT_TOKEN="$bot_token"
 
