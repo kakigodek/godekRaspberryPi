@@ -55,13 +55,65 @@ bot_token=$(prompt_input "Please enter the bot token")
 export BOT_TOKEN="$bot_token"
 
 # Create a config file with the bot token
-# config="module.exports = { telegramToken: '$bot_token' };"
-# echo "$config" > "config.js"
+config="module.exports = { telegramToken: '$bot_token' };"
+echo "$config" > "config.js"
 
-# Download sysinfo.sh file from git
-echo "Downloading sysinfo.sh file..."
-wget -O sysinfo.sh https://raw.githubusercontent.com/kakigodek/godekRaspberryPi/main/RaspberryPi/misc/sysinfo.sh
+# Create a new Node.js file named bot.js
+echo "Creating bot.js file..."
+echo "const { Telegraf } = require('telegraf')" > bot.js
+echo "const { message } = require('telegraf/filters')" >> bot.js
+echo "" >> bot.js
+echo "const config = require('./config');" >> bot.js
+echo "" >> bot.js
+echo "// Create a new Telegraf instance with your Telegram token" >> bot.js
+echo "const bot = new Telegraf(config.telegramToken);" >> bot.js
+echo "const botToken = config.telegramToken;" >> bot.js
+echo "console.log(`Bot Token: ${botToken}`);" >> bot.js
+echo "" >> bot.js
+echo "// Define your bot commands or actions" >> bot.js
+echo "bot.start((ctx) => ctx.reply('Welcome! /info'));" >> bot.js
+echo "bot.help((ctx) => ctx.reply('Send me a sticker'));" >> bot.js
+echo "bot.on('sticker', (ctx) => ctx.reply('👍'));" >> bot.js
+echo "bot.hears('hi', (ctx) => ctx.reply('Hey there'));" >> bot.js
+echo "bot.hears('Hi', (ctx) => ctx.reply('Hey there'));" >> bot.js
+echo "" >> bot.js
+echo "bot.command('info', (ctx) => {" >> bot.js
+echo "    console.log(ctx.from);" >> bot.js
+echo "    ctx.deleteMessage();" >> bot.js
+echo "    ctx.telegram.sendMessage(ctx.chat.id, 'Senarai Arahan :'," >> bot.js
+echo "        {" >> bot.js
+echo "            reply_markup:{" >> bot.js
+echo "                inline_keyboard: [" >> bot.js
+echo "                    [{text: 'My IP', callback_data: 'ip'}]" >> bot.js
+echo "                ]" >> bot.js
+echo "            }" >> bot.js
+echo "        })" >> bot.js
+echo "});" >> bot.js
+echo "" >> bot.js
+echo "// Handle the callback for the 'Get Linux Info' button" >> bot.js
+echo "bot.action('ip', (ctx) => {" >> bot.js
+echo "    ctx.deleteMessage();" >> bot.js
+echo "    // Execute the 'uname -a' command and send the result" >> bot.js
+echo "    const { exec } = require('child_process');" >> bot.js
+echo "    exec('sudo sh /opt/${bot_name}/sysinfo.sh', (error, stdout, stderr) => {" >> bot.js
+echo "        if (error) {" >> bot.js
+echo "            ctx.reply('An error occurred while running the command.');" >> bot.js
+echo "            return;" >> bot.js
+echo "        }" >> bot.js
+echo "        ctx.reply('Linux Info:\\n' + stdout);" >> bot.js
+echo "    });" >> bot.js
+echo "});" >> bot.js
+echo "" >> bot.js
+echo "// Start the bot" >> bot.js
+echo "bot.launch();" >> bot.js
+echo "" >> bot.js
+echo "console.log('Bot is running...');" >> bot.js
+echo "bot.js file created."
 
-# Make sysinfo.sh executable
-chmod +x sysinfo.sh
+# Make bot.js executable
+chmod +x bot.js
 
+# Execute bot.js script
+echo "Executing bot.js script..."
+node bot.js
+echo "bot.js script execution completed."
