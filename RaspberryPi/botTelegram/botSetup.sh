@@ -68,7 +68,7 @@ echo "" >> bot.js
 echo "// Create a new Telegraf instance with your Telegram token" >> bot.js
 echo "const bot = new Telegraf(config.telegramToken);" >> bot.js
 echo "const botToken = config.telegramToken;" >> bot.js
-echo "console.log(`Bot Token: ${botToken}`);" >> bot.js
+echo "console.log('Bot Token: '+botToken+'' );" >> bot.js
 echo "" >> bot.js
 echo "// Define your bot commands or actions" >> bot.js
 echo "bot.start((ctx) => ctx.reply('Welcome! /info'));" >> bot.js
