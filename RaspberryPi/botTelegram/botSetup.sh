@@ -52,7 +52,12 @@ echo "telegraf and node-datetime modules installation completed."
 bot_token=$(prompt_input "Please enter the bot token")
 
 cd "$bot_directory"
-sudo wget https://raw.githubusercontent.com/kakigodek/godekRaspberryPi/main/RaspberryPi/misc/sysinfo.sh && sudo chmod +x sysinfo.sh
+
+# Download sysinfo.sh file from git
+echo "Downloading sysinfo.sh file..."
+sudo wget -O sysinfo.sh https://raw.githubusercontent.com/kakigodek/godekRaspberryPi/main/RaspberryPi/misc/sysinfo.sh && sudo chmod +x sysinfo.sh
+echo "sysinfo.sh file downloaded."
+
 # Set bot token as environment variable for this session
 export BOT_TOKEN="$bot_token"
 
