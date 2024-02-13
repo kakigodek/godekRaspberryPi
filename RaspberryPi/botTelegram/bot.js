@@ -22,14 +22,14 @@ bot.command('info', (ctx) => {
         {
             reply_markup:{
                 inline_keyboard: [
-                    [{text: 'My IP', callback_data: 'ip'}]
+                    [{text: 'My Info', callback_data: 'info'}]
                 ]
             }
         })
 });
 
 // Handle the callback for the 'Get Linux Info' button
-bot.action('ip', (ctx) => {
+bot.action('info', (ctx) => {
     ctx.deleteMessage();
     // Execute the 'uname -a' command and send the result
     const { exec } = require('child_process');
