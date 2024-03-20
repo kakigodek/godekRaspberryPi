@@ -1,5 +1,6 @@
 # this script to list out all mac address from website url.
 # from the output i will import to imaster nce campus.
+# Admission / Admission Resources / User Management / MAC Account
 
 import requests
 from bs4 import BeautifulSoup
