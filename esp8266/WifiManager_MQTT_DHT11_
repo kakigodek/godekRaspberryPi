@@ -1,0 +1,133 @@
+#include "DHT.h"
+#include <ESP8266WiFi.h>
+#include <Ticker.h>
+#include <AsyncMqttClient.h>
+#include <WiFiManager.h>
+
+#define DHTPIN 2
+#define DHTTYPE DHT11   
+
+DHT dht(DHTPIN, DHTTYPE);
+
+// Variables to hold sensor readings
+float temp;
+float hum;
+
+char mqtt_host[40];
+char mqtt_port[6] = "1883"; // Manually set MQTT port
+char mqtt_loc[10] = "DRC"; // Manually set MQTT location  add on v2
+AsyncMqttClient mqttClient;
+Ticker mqttReconnectTimer;
+
+WiFiManager wifiManager;
+
+WiFiManagerParameter mqtt_host_param("host", "MQTT Host", mqtt_host, 40);
+WiFiManagerParameter mqtt_port_param("port", "MQTT Port", mqtt_port, 6);
+WiFiManagerParameter mqtt_loc_param("loc", "Sensor Location", mqtt_loc, 10);
+
+unsigned long previousMillis = 0;
+const long interval = 10000;
+
+void connectToMqtt() {
+  Serial.println("Connecting to MQTT...x00");
+  mqttClient.connect();
+}
+
+void onMqttConnect(bool sessionPresent) {
+  Serial.print("Session present: ");
+  Serial.println(sessionPresent);
+}
+
+
+void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
+  Serial.println("Disconnected from MQTT.");
+
+  if (WiFi.isConnected()) {
+    Serial.println("Attempting to reconnect to MQTT...");
+    connectToMqtt(); // Reconnect to MQTT connectToMqtt
+  } else {
+    Serial.println("Lost Wi-Fi connection. Entering Config Portal...");
+    wifiManager.setConfigPortalTimeout(180); // Set Config Portal timeout
+    wifiManager.startConfigPortal(); // Start Config Portal
+  }
+}
+
+void connectToWiFiManager() {
+  Serial.println("Starting WiFiManager.");
+  wifiManager.startConfigPortal("AutoConnectAP");
+}
+
+//add new fit3
+void onMqttPublish(uint16_t packetId) {
+  Serial.print("Publish acknowledged.");
+  Serial.print("  packetId: ");
+  Serial.println(packetId);
+}
+
+void setup() {
+  Serial.begin(115200);
+  Serial.setDebugOutput(true);
+  Serial.println();
+
+  dht.begin();
+
+  wifiManager.addParameter(&mqtt_host_param);
+  wifiManager.addParameter(&mqtt_port_param);
+  wifiManager.addParameter(&mqtt_loc_param);
+
+  wifiManager.autoConnect("IoT-DiTec-Sensor");
+
+  
+  String mqttHost = mqtt_host_param.getValue(); // Get MQTT Host value as String
+  String mqttPort = mqtt_port_param.getValue(); // Get MQTT Port value as String
+  
+  
+
+  mqttClient.onConnect(onMqttConnect);
+  mqttClient.onDisconnect(onMqttDisconnect);
+  mqttClient.onPublish(onMqttPublish); //add new fit3
+  // Set the MQTT server using the obtained host and port values
+  mqttClient.setServer(mqttHost.c_str(), atoi(mqttPort.c_str())); // Set the MQTT server with the obtained host and port
+
+//  connectToMqtt();
+  connectToWifi();
+}
+
+void connectToWifi() {
+  Serial.println("Connecting to Wi-Fi...");
+  // Check if WiFi is connected
+  if (WiFi.isConnected()) {
+   
+    Serial.println("reTry wifi connected");
+    connectToMqtt();
+  } 
+}
+
+void loop() {
+  String mqttLoc = mqtt_loc_param.getValue(); // Get MQTT Host value as String
+  String mqttPubTemp = "ditec/" + mqttLoc + "/temperature";
+  String mqttPubHum = "ditec/" + mqttLoc + "/humidity";
+
+  
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+    float hum = dht.readHumidity();
+    float temp = dht.readTemperature();
+
+    // Dummy temperature and humidity values
+//    float temp = 25.0; // Example: 25.0°C
+//    float hum = 50.0;  // Example: 50.0% humidity
+    
+    //uint16_t packetIdPub1 = mqttClient.publish("esp/noc/temperature", 1, true, String(temp).c_str());                            
+    uint16_t packetIdPub1 = mqttClient.publish(mqttPubTemp.c_str(), 1, true, String(temp).c_str());                            
+    //Serial.printf("Publishing on topic %s at QoS 1, packetId: %i ", mqtt_temp_param.getValue(), packetIdPub1);
+    //Serial.printf("Message: %.2f \n", temp);
+
+
+    //uint16_t packetIdPub2 = mqttClient.publish("esp/noc/humidity", 1, true, String(hum).c_str());                            
+    uint16_t packetIdPub2 = mqttClient.publish(mqttPubHum.c_str(), 1, true, String(hum).c_str());   
+    //Serial.printf("Publishing on topic %s at QoS 1, packetId %i: ",mqtt_hum_param.getValue(), packetIdPub2);
+    //Serial.printf("Message: %.2f \n", hum);
+  }
+}
