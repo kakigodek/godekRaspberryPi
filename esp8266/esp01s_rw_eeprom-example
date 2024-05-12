@@ -1,0 +1,98 @@
+/*
+Demo how to store data on eeprom.
+this code also do checker on startup to format eeprom for the first time use.
+Author : Kakigodek
+Date : 12 May 2024
+*/
+
+#include <EEPROM.h>
+
+//EEPROM Data Checker.
+char esp_eeprom_check[1]; //0 not format || 1 already format
+
+// MQTT settings
+char mqtt_host[16];
+char mqtt_port[6]; 
+char mqtt_loc[11]; 
+
+void readMQTTSettings() {
+  EEPROM.begin(512); // Initialize EEPROM
+  EEPROM.get(0, esp_eeprom_check);
+  EEPROM.get(1, mqtt_host);
+  EEPROM.get(17, mqtt_port);
+  EEPROM.get(23, mqtt_loc); 
+  EEPROM.end();
+}
+
+void writeMQTTSettings() {
+  EEPROM.begin(512); // Re-initialize EEPROM
+  EEPROM.put(0, esp_eeprom_check);
+  EEPROM.put(1, mqtt_host);
+  EEPROM.put(17, mqtt_port);
+  EEPROM.put(23, mqtt_loc); 
+  EEPROM.commit(); // Save changes to EEPROM
+  EEPROM.end();
+}
+
+void printStoredData() {
+  Serial.println("Stored MQTT Settings:");
+  Serial.print("Format : ");
+  Serial.println(esp_eeprom_check);
+  Serial.print("Host: ");
+  Serial.println(mqtt_host);
+  Serial.print("Port: ");
+  Serial.println(mqtt_port);
+  Serial.print("Temperature Location: ");
+  Serial.println(mqtt_loc);
+}
+
+void eraseEEPROMCallback() {
+  EEPROM.begin(512);
+  for (int i = 0; i < 512; i++) {
+    EEPROM.write(i, 0);
+  }
+  strcpy(esp_eeprom_check, "0");
+  EEPROM.put(0, esp_eeprom_check);
+  EEPROM.commit();
+  delay(2000);
+  ESP.restart();
+}
+
+void setup() {
+  EEPROM.begin(512);
+  EEPROM.get(0, esp_eeprom_check);
+  
+  Serial.begin(115200);
+  Serial.println();
+
+  // Read MQTT settings from EEPROM
+  readMQTTSettings();
+
+  // Print read MQTT settings
+  printStoredData();
+
+  // Write MQTT settings to EEPROM
+  strcpy(mqtt_host, "192.168.102.123");
+  strcpy(mqtt_port, "1883");
+  strcpy(mqtt_loc, "pusat_data");
+
+  writeMQTTSettings();
+
+  Serial.println("MQTT Settings written to EEPROM.");
+
+  String eFormat = esp_eeprom_check;
+   if(eFormat == "0"){
+    Serial.println("Already Format..");
+  }else{
+    Serial.println("Commit to clear eeprom...");
+    eraseEEPROMCallback();
+  }
+  
+}
+
+void loop() {
+  // Nothing to do here
+  printStoredData();
+  Serial.println("=====");
+  delay(2000);
+}
