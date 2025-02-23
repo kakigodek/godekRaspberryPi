@@ -20,4 +20,5 @@ sudo systemctl enable oled-display
 sudo systemctl start oled-display
 sudo journalctl -u oled-display -f
 
+sudo pip3 install -r /opt/oled/requirements.txt
 
