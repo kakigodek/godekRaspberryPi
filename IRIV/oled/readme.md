@@ -18,5 +18,6 @@ WantedBy=multi-user.target
 
 sudo systemctl enable oled-display
 sudo systemctl start oled-display
+sudo journalctl -u oled-display -f
 
 
